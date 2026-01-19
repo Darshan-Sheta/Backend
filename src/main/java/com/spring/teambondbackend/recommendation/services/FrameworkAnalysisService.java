@@ -108,7 +108,7 @@ public class FrameworkAnalysisService {
         return stats;
     }
 
-    // @RabbitListener(queues = {"${rabbitmq.queue}"})
+    @Async
     public void calculateUserFrameworkStats(GithubScoreRequest request) {
         try {
             logger.info("Processing message for user: {}", request.getUsername());

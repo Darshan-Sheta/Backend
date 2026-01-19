@@ -63,6 +63,7 @@ public class UserController {
     private final PaymentOrderRepository paymentOrderRepository;
     private final JwtUtil jwtUtil;
     private final RabbitMqProducer rabbitMqProducer;
+    private final com.spring.teambondbackend.recommendation.services.FrameworkAnalysisService frameworkAnalysisService;
 
     private final UserRepository userRepository;
     private final CodeChefScraperService codeChefScraperService;
@@ -208,7 +209,8 @@ public class UserController {
             String decryptedToken = EncryptionUtil.decrypt(u.getGithubAccessToken(), secretKey);
             githubScoreRequest.setAccessToken(decryptedToken);
             System.out.println("decrepted github access token" + decryptedToken);
-            // rabbitMqProducer.sendUserToQueue(githubScoreRequest);
+            // Trigger async analysis
+            frameworkAnalysisService.calculateUserFrameworkStats(githubScoreRequest);
             return ResponseEntity.ok(savedUser);
 
         } catch (Exception e) {
