@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RabbitMqProducer {
 
-    private final RabbitTemplate rabbitTemplate;
+    // private final RabbitTemplate rabbitTemplate;
     private static final Logger logger = LoggerFactory.getLogger(RabbitMqProducer.class);
 
     @org.springframework.beans.factory.annotation.Value("${rabbitmq.exchange}")
@@ -22,7 +22,7 @@ public class RabbitMqProducer {
     private String routingKey;
 
     public void sendUserToQueue(GithubScoreRequest user) {
-        logger.info("Sending user to queue", user);
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, user);
+        logger.info("RabbitMQ disabled. Skipping sending user to queue", user);
+        // rabbitTemplate.convertAndSend(exchangeName, routingKey, user);
     }
 }

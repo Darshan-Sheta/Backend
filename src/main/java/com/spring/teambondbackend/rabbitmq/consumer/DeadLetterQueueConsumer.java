@@ -38,7 +38,7 @@ public class DeadLetterQueueConsumer {
      * @param request The GitHub score request that failed processing.
      * @param headers Message headers, including the exception stack trace.
      */
-    @RabbitListener(queues = "${rabbitmq.dlq.queue}")
+    // @RabbitListener(queues = "${rabbitmq.dlq.queue}")
     public void handleDeadLetterMessage(@Payload GithubScoreRequest request, @Headers Map<String, Object> headers) {
         String stackTrace = extractStackTrace(headers);
         logger.error("Received DLQ message for user: {}, error: {}", request.getUsername(), stackTrace);
