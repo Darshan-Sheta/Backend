@@ -17,7 +17,8 @@ public class CustomCorsConfiguration implements CorsConfigurationSource {
     @Override
     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontendUrl, frontendUrl + "/")); // Must NOT be "*"
+        config.setAllowedOrigins(List.of(frontendUrl, frontendUrl + "/", "https://frontend-lovat-chi-40.vercel.app",
+                "https://frontend-lovat-chi-40.vercel.app/")); // Must NOT be "*"
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

@@ -16,21 +16,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        //on /chat endpoint connection will be established
+        // on /chat endpoint connection will be established
         registry.addEndpoint("/api/v1/chat")
-                .setAllowedOrigins(frontendUrl, frontendUrl + "/")
+                .setAllowedOrigins(frontendUrl, frontendUrl + "/", "https://frontend-lovat-chi-40.vercel.app",
+                        "https://frontend-lovat-chi-40.vercel.app/")
                 .withSockJS();
         // Also add /chat endpoint for compatibility (if frontend uses different path)
         registry.addEndpoint("/chat")
-                .setAllowedOrigins(frontendUrl, frontendUrl + "/")
+                .setAllowedOrigins(frontendUrl, frontendUrl + "/", "https://frontend-lovat-chi-40.vercel.app",
+                        "https://frontend-lovat-chi-40.vercel.app/")
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        //client-side mapping endpoint
+        // client-side mapping endpoint
         config.enableSimpleBroker("/api/v1/topic");
-        //server-side mapping endpoint
+        // server-side mapping endpoint
         config.setApplicationDestinationPrefixes("/app");
     }
 }
