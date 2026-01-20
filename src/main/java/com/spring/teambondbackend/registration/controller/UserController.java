@@ -193,14 +193,16 @@ public class UserController {
                     savedUser.getStatus());
             // Log JWT token to console
             System.out.println("Generated JWT Token: " + token);
-            // Set JWT token as HttpOnly, Secure cookie with SameSite=Strict
-            Cookie cookie = new Cookie("jwtToken", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(request.isSecure()); // Set secure only if request is HTTPS
-            cookie.setPath("/");
-            cookie.setMaxAge(86400);
-            response.addCookie(cookie);
-            System.out.println("Hello" + response.getHeader("Set-Cookie"));
+            // Set JWT token as HttpOnly, Secure cookie with SameSite=None
+            ResponseCookie cookie = ResponseCookie.from("jwtToken", token)
+                    .httpOnly(true)
+                    .secure(true) // Required for SameSite=None
+                    .path("/")
+                    .maxAge(86400)
+                    .sameSite("None")
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            System.out.println("Hello" + response.getHeader(HttpHeaders.SET_COOKIE));
             // Return user info (without token in body)
             GithubScoreRequest githubScoreRequest = new GithubScoreRequest();
             githubScoreRequest.setUsername(user.getUsername());
@@ -243,8 +245,14 @@ public class UserController {
         }
 
         // Expire the JWT cookie
-        String expiredCookie = "jwtToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0";
-        response.addHeader("Set-Cookie", expiredCookie);
+        ResponseCookie expiredCookie = ResponseCookie.from("jwtToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
 
         return ResponseEntity.ok("Logged out successfully");
     }
@@ -343,10 +351,14 @@ public class UserController {
             // Log JWT token to console
             System.out.println("updated JWT Token: " + newToken);
             // Set the new JWT token as a cookie
-            String cookieValue = "jwtToken=" + newToken
-                    + "; HttpOnly; SameSite=Strict; Path=/; Max-Age=86400"; // Secure removed for localhost
-                                                                            // compatibility
-            response.addHeader("Set-Cookie", cookieValue);
+            ResponseCookie cookie = ResponseCookie.from("jwtToken", newToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(86400)
+                    .sameSite("None")
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         }
         paymentOrder.setUserId(data.get("userId").toString());
         paymentOrderRepository.save(paymentOrder);
@@ -553,12 +565,14 @@ public class UserController {
             );
 
             // Set the new JWT token as a cookie
-            Cookie cookie = new Cookie("jwtToken", newToken);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false); // Set to true in production
-            cookie.setPath("/");
-            cookie.setMaxAge(86400);
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("jwtToken", newToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(86400)
+                    .sameSite("None")
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             return ResponseEntity.ok(Map.of("message", "Upgraded to premium successfully", "user", user));
         } catch (Exception e) {
