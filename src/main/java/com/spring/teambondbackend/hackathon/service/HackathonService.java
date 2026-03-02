@@ -145,15 +145,23 @@ public class HackathonService {
     }
 
     public Hackathon getHackathonById(String id) {
-        Object cached = redisTemplate.opsForValue().get(id);
-        if (cached != null) {
-            Hackathon hackathon = objectMapper.convertValue(cached, Hackathon.class);
-            return hackathon;
+        try {
+            Object cached = redisTemplate.opsForValue().get(id);
+            if (cached != null) {
+                Hackathon hackathon = objectMapper.convertValue(cached, Hackathon.class);
+                return hackathon;
+            }
+        } catch (Exception e) {
+            logger.warn("Redis cache read failed for ID {}: {}. Falling back to DB.", id, e.getMessage());
         }
 
         Hackathon hackathon = hackathonRepository.findById(id).orElse(null);
         if (hackathon != null) {
-            redisTemplate.opsForValue().set(id, hackathon, 86400, TimeUnit.SECONDS);
+            try {
+                redisTemplate.opsForValue().set(id, hackathon, 86400, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                logger.warn("Redis cache write failed for ID {}: {}", id, e.getMessage());
+            }
             return hackathon;
         }
 
